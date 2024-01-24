@@ -17,7 +17,9 @@
   //   alert(`${event.alpha} : ${event.beta} : ${event.gamma}`);
   // });
   // console.log("hi")
+  
 </script>
+<script src="https://unpkg.com/@joeyklee/compass.js@latest/dist/compass.js"></script>
 <body>
 
 <div class="">
@@ -31,9 +33,17 @@
       DeviceOrientationEvent.requestPermission()
       .then(response => {
           if (response == 'granted') {
-              window.addEventListener('deviceorientation', (e) => {
-                alert(`alpha (fidget rotation): ${e.alpha} \n beta (holding normally angle to ground): ${e.beta} \n gamma (swivel left / right): ${e.gamma}`);
-              })
+            const compass = new Compass();
+            compass.init(compassLoaded);
+
+
+            function compassLoaded(){
+              const bearingToNorth = compass.getBearingToNorth();
+              alert("bearingToNorth", bearingToNorth); // 0;
+            }
+              // window.addEventListener('deviceorientation', (e) => {
+              //   alert(`alpha (fidget rotation): ${e.alpha} \n beta (holding normally angle to ground): ${e.beta} \n gamma (swivel left / right): ${e.gamma}`);
+              // })
           }
       })
       .catch(console.error)
