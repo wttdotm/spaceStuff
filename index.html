@@ -7,10 +7,16 @@
 <style>
 </style>
 <script>
-  window.addEventListener("deviceorientation", (event) => {
-    alert(`${event.alpha} : ${event.beta} : ${event.gamma}`);
-  });
-  console.log("hi")
+  // let givenPermission = false
+
+
+
+  // setInterval()
+
+  // window.addEventListener("deviceorientation", (event) => {
+  //   alert(`${event.alpha} : ${event.beta} : ${event.gamma}`);
+  // });
+  // console.log("hi")
 </script>
 <body>
 
@@ -18,6 +24,23 @@
  <h1>This is a Heading</h1>
  <p>This is a paragraph.</p>
  <p>This is another paragraph.</p>
+
+
+ <script type="text/javascript">
+  function requestOrientationPermission(){
+      DeviceOrientationEvent.requestPermission()
+      .then(response => {
+          if (response == 'granted') {
+              window.addEventListener('deviceorientation', (e) => {
+                alert(e)
+              })
+          }
+      })
+      .catch(console.error)
+  }
+</script>
+
+<button onclick='requestOrientationPermission();'>Request orientation permission</button>
 </div>
 
 </body>
