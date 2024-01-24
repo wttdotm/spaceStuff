@@ -32,7 +32,7 @@
       .then(response => {
           if (response == 'granted') {
               window.addEventListener('deviceorientation', (e) => {
-                alert(`alpha (fidget rotation): ${event.alpha} \n beta (holding normally angle to ground): ${event.beta} \n gamma (swivel left / right): ${event.gamma}`);
+                alert(`alpha (fidget rotation): ${e.alpha} \n beta (holding normally angle to ground): ${e.beta} \n gamma (swivel left / right): ${e.gamma}`);
               })
           }
       })
