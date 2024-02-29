@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+    <script>
+
+var stars = [];
+let starImage = false
+let getImage
+let loading = false
+let textContent
+let bounds
+let fontSize = 80
+let pointCacheLine1
+let rectButton
+let cnv
+
+getImage = async (imageURL) => {
+    console.log("in getImage")
+    console.log(imageURL)
+    starImage = loadImage(imageURL)
+    console.log(starImage)
+}
+
+function preload() {
+  font = loadFont('static/CodyStarFont.ttf');
+}
+
+function setup() {
+  cnv = createCanvas(window.innerWidth, window.innerHeight);
+  rectButton = new betterButton(width / 2, height / 4 + 100,200,50, 30)
+  console.log(rectButton)
+  console.log(cnv.mouseClicked)
+  
+  // mouseClicked = () => console.log("cliked")
+  // console.log(cnv.mouseClicked)
+  
+  mouseClicked = () => {
+    console.log("in mosue cliucked", mouseX, mouseY)
+    console.log(rectButton.x - (rectButton.w / 2))
+    console.log(rectButton.x + (rectButton.w / 2))
+    if (mouseX > rectButton.x - (rectButton.w / 2) && mouseX < rectButton.x + (rectButton.w / 2) && mouseY > rectButton.y - (rectButton.h / 2) && mouseY < rectButton.y + (rectButton.h / 2)) rectButton.clicked()
+  }
+  
+  // console.log(font)
+
+	
+	for (var i = 0; i < 75; i++) {
+        if (i % 2 == 0) {
+          stars[i] = new Star()
+        } else {
+          stars[i] = new newStar(false, false, false, Math.round(random(0,2)))
+        }
+	}
+  rectMode(CENTER)
+
+  textContent = 'The Star Above'
+  bounds = font.textBounds(textContent, 0, 0, fontSize);
+  
+  pointCacheLine1 = font.textToPoints(
+    textContent, // Text output
+    width/2 - bounds.w/2, // x coordinate
+    height/5, // y coordinate
+    fontSize, // font size
+    {sampleFactor: 0.04} // Density between 0-1
+    );
+  
+  pointCacheLine1.forEach((p, index) => {
+    // console.log("in star cache", p.x, p.y)
+      if (true) {
+        stars[stars.length] = new Star(p.x, p.y, 3, true)
+      } else {
+        stars[stars.length] = new newStar(p.x, p.y, false, Math.round(random(0,2)), true)
+      }
+
+  })
+
+}
+
+function draw() {
+  // console.log(stars.length)
+  background(4,12,36);
+  // rectButton = new betterButton(width / 2, height / 4 + 100,200,50, 30)
+	// noStroke()
+	for (var i = 0; i < stars.length; i++) {
+		if (loading && !stars[i].isText) stars[i].y = stars[i].y + 4
+    if (stars[i].y < 0) stars[i].y = height
+    if (stars[i].y > height) stars[i].y = 0
+    stars[i].draw();
+    // if (frameCount === 1) console.log('drawing star #', i, stars[i].x, stars[i].y)
+	}
+
+  // for 
+  // if (frameCount === 100) getImage('https://www.wemakeinter.net/images/banner-april-2023.png')
+  
+  if (starImage.width > 1) {
+    loading = false
+    // console.log("starImage in draw", starImage)
+    image(starImage, (width/2)-(starImage.width/2), (height / 2)-(starImage.height / 2)+100)//.resize(200,200)
+    push()
+      stroke('red')
+      strokeWeight('2')
+      fill(255,0)
+      rect((width/2), (height / 2)+100, 100,100)
+    pop()
+  }
+
+  fill('White')
+  textSize(16);
+  textAlign(CENTER, CENTER);
+  text("Do you know what star is directly overhead? Press the button to see.", width / 2, height / 4)
+  rectButton.draw()
+}
+
+class betterButton {
+  constructor(x, y, w, h) {
+    this.x = x
+    this.y = y
+    this.w = w
+    this.h = h
+    this.fill = [255]
+  }
+  
+  draw() {
+    fill(...this.fill)
+    rect(this.x, this.y, this.w, this.h, 30)
+  }
+  
+  
+  clicked() {
+    this.fill = [255, 0]
+    console.log("clicked!")
+    getLocation()
+  }
+
+
+}
+
+
+// NEW STAR CLASSES:
+// star class //
+class Star {
+	constructor(x = false, y = false, size = false, isText = false) {
+    this.isText = isText || false
+		this.x = x || random(width);
+		this.y = y || random(height);
+		this.size = size || random(0.25, 3);
+		this.t = random(TAU);
+	}
+	
+	draw() {
+		this.t += 0.1;
+		var scale = this.size + sin(this.t) * 2;
+		noStroke();
+		ellipse(this.x, this.y, scale, scale);
+	}
+}
+
+class newStar {
+	constructor(x = false, y = false, size = false, stage = 0, isText = false) {
+      this.isText = isText || false
+      this.x = x || random(width);
+      this.y = y || random(height);
+      this.size = size || random(0.25, 3);
+      this.t = random(TAU);
+      this.timeCounter = 0
+      this.timeDelay = 30
+      this.stage = stage || 0
+	}
+	
+	draw() {
+
+      // push()
+        if (this.stage === 0) {
+          fill("white")
+          noStroke()
+          rect(this.x,this.y,4,4)
+          this.timeCounter++
+          if (this.timeCounter > this.timeDelay) {
+            this.stage = 1
+            this.timeCounter = 0
+          }          
+        } else if (this.stage === 1) {
+          // fill("white")
+          // push()
+          rect(this.x,this.y, 1, 10)
+          rect(this.x,this.y, 10, 1)
+          // rect(this.x-5,this.y + 5, 1, 1)
+          // rect(this.x-5,this.y - 5, 1, 1)
+          // point(this.x+5,this.y + 5)
+          // point(this.x+5,this.y - 5)
+          // point(this.x-5,this.y + 5)
+          // point(this.x-5,this.y - 5)
+          stroke('white');
+          strokeWeight(3)
+          this.timeCounter++
+          if (this.timeCounter > this.timeDelay) {
+            this.stage = 2
+            this.timeCounter = 0
+          }
+          // pop()
+        } else if (this.stage === 2) {
+          // fill("white")
+          // push()
+          rect(this.x+5,this.y + 5, 1, 1)
+          rect(this.x+5,this.y - 5, 1, 1)
+          rect(this.x-5,this.y + 5, 1, 1)
+          rect(this.x-5,this.y - 5, 1, 1)
+          // point(this.x+5,this.y + 5)
+          // point(this.x+5,this.y - 5)
+          // point(this.x-5,this.y + 5)
+          // point(this.x-5,this.y - 5)
+          stroke('white');
+          strokeWeight(3)
+          this.timeCounter++
+          if (this.timeCounter > this.timeDelay) {
+            this.stage = 0
+            this.timeCounter = 0
+          }
+          // pop()
+        }
+		// this.t += 0.1;
+		// var scale = this.size + sin(this.t) * 2;
+		// noStroke();
+		// ellipse(this.x, this.y, scale, scale);
+      // pop()
+	}
+}
+
+async function getLocation() {
+  // loading = true
+  if (navigator.geolocation) {
+    loading = true
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    alert("Geolocation is not supported by this browser.")
+  }
+}
+
+async function showPosition(position) {
+  loading = true
+  getImage(`http://127.0.0.1:8001/${position.coords.latitude}/${position.coords.longitude}`)
+  
+  // window.location.replace(`http://127.0.0.1:5000/${position.coords.latitude}/${position.coords.longitude}`)
+}
+    </script>
+    <style>
+      html, body { 
+        margin: 0;
+        height: 100%;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -9999;
+      }
+    </style>
+  </head>
+<body>
+<!-- <h1>HTML Geolocation</h1>
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+
+<p id="demo"></p> -->
+
+<script>
+
+// function getLocation() {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition(showPosition);
+//   } else { 
+//     x.innerHTML = "Geolocation is not supported by this browser.";
+//   }
+// }
+
+
+// function newImage(a,b,c)
+// {
+//   this.link=a;
+//   this.alt=b;
+//   this.thumb=c;
+// }
+
+// function show_image()
+// {
+//   document.write("img src="+this.link+">");
+// }
+
+// image1=new newImage("img/img1.jpg","dsfdsfdsfds","thumb/img3");
+
+
+</script>
+
+</body>
+</html>
